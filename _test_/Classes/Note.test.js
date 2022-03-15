@@ -6,7 +6,7 @@ import Note from '../../Classes/Note'
 
 const nanoIdResponse = 'qwerty'
 jest.useFakeTimers()
-
+jest.setSystemTime(new Date('2021-01-01'))
 describe('Test Suite > Note Class', () => {
 
   test('Instantiation: Note | id: string | created: JS timestamp', () => {
@@ -17,17 +17,17 @@ describe('Test Suite > Note Class', () => {
   test('id: string', () => {
     const note = new Note();
     note._id = nanoIdResponse;
-    expect().toEqual(nanoIdResponse)
+    expect(note.id).toEqual(nanoIdResponse)
   })
 
   test('created: JS timestamp', () => {
     const note = new Note();
-    expect(note.created).toEqual(0)
+    expect(note.created).toEqual(1609459200000)
   })
 
   test('updated: JS timestamp', () => {
     const note = new Note();
-    expect(note.updated).toEqual(0)
+    expect(note.updated).toEqual(1609459200000)
   })
 
   test('title(title?: string): string|this', () => {
@@ -51,8 +51,8 @@ describe('Test Suite > Note Class', () => {
       id: nanoIdResponse,
       title: 'title',
       text: 'text',
-      created: 0,
-      updated: 0
+      created: 1609459200000,
+      updated: 1609459200000
     })
   })
 
@@ -61,8 +61,8 @@ describe('Test Suite > Note Class', () => {
       id: nanoIdResponse,
       title: 'title',
       text: 'text',
-      created: 0,
-      updated: 0
+      created: 1609459200000,
+      updated: 1609459200000
     };
     const note = new Note();
     note.title('title').text('text')._id = nanoIdResponse
@@ -72,6 +72,10 @@ describe('Test Suite > Note Class', () => {
   test(
     'static toNote({{ id: string, title: string, text: string, created: number, updated: number }}): Note',
     () => {
-    expect(Note.toNote({id: nanoIdResponse, title: 'title', text: 'text', created: 0, updated: 0})).toBeInstanceOf(Note)
+    expect(Note.toNote({id: nanoIdResponse, title: 'title', text: 'text', created: 1609459200000, updated: 1609459200000})).toBeInstanceOf(Note)
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
   })
 })
