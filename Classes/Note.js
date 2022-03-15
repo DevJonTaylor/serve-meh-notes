@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid'
  * @property {Date} _updated
  */
 export default class Note {
-  _id = nanoid()
+  _id = nanoid(7)
   _title = ''
   _text = ''
   _created = new Date()
