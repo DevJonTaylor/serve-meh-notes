@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "author": "Jon Taylor",
   "license": "MIT",
@@ -17,6 +18,9 @@
   },
   "devDependencies": {
     "cors": "^2.8.5",
-    "lodash": "^4.17.21"
+    "cross-env": "^7.0.3",
+    "jest": "^27.5.1",
+    "lodash": "^4.17.21",
+    "supertest": "^6.2.2"
   }
 }
