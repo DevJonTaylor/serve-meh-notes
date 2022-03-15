@@ -44,8 +44,14 @@ class Notes {
   static async get(id) {
     await this.init();
     return !id
-      ? this.notes
+      ? this.containAndSort()
       : get(this.notes, id, {});
+  }
+
+  static containAndSort() {
+    return Object.entries(this.notes)
+      .map(note => note[1])
+      .sort((a, b) => a.date < b.date)
   }
 
   static async set({ id, title, text }) {
@@ -60,22 +66,18 @@ class Notes {
 
     await this.write();
 
-    return this.notes[id];
+    return this.containAndSort();
   }
 
   static async drop(id) {
     await this.init();
-    let deletedNote;
-    if(!id) {
-      deletedNote = {...this.notes};
-      this.notes = {};
-    } else {
-      deletedNote = {...this.notes[id]};
-      delete this.notes[id];
-    }
+
+    if(!id) this.notes = {};
+    else delete this.notes[id];
+
     await this.write();
 
-    return deletedNote;
+    return this.containAndSort();
   }
 
   static async has(id) {
