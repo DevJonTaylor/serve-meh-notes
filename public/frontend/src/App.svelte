@@ -4,12 +4,16 @@
   import Navbar from './lib/Components/Navbar.svelte'
   import NoteTaker from './lib/Components/NoteTaker.svelte'
   import ListContainer from './lib/Components/ListContainer.svelte'
+  import LoadingModal from './lib/Components/LoadingModal.svelte'
 
   onMount(() => {
     fetch('http://localhost:3001/api/notes')
       .then(resp => resp.json())
-      .then(json => originalStore.set(json))
+      .then(notes => originalStore.set(notes))
   })
+
+
+
 </script>
 
 <Navbar />
@@ -19,3 +23,4 @@
     <NoteTaker />
   </div>
 </main>
+<LoadingModal />

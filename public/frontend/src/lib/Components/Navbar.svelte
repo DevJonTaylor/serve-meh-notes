@@ -1,6 +1,7 @@
 <script>
 import { activeStore, originalStore, editedStore } from '../Store/Notes.js'
 import { titleStore, textStore } from '../Store/NoteTaker.js'
+import { loadingStore } from '../Store/LoadingStore.js'
 
 const icon = i => `fas fa-${i} text-light fade show`
 let disableRevert = true
@@ -88,8 +89,28 @@ const revert = () => {
   activeStore.set($originalStore.find(n => n.id === note.id))
 }
 
-const saveNote = () => {
+const createNote = () => {
+  fetch(`http://localhost:3001/api/notes/`, {
+    method: 'post',
+    body: JSON.stringify(note)
+  })
+    .then(resp => resp.json())
+    .then(json => {
+      removeEdited()
+      originalStore.set(json)
+    })
+}
 
+const updateNote = () => {
+
+}
+
+const saveNote = () => {
+  loadingStore.set(true)
+  note.title = title
+  note.text = text
+  if(!note.id) createNote()
+  else updateNote()
 }
 
 </script>
