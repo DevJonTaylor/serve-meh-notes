@@ -15,6 +15,7 @@ export const notesStore = derived([originalStore, editedStore], ([original, edit
 
     return newNote
   })
+
   set(newArray.sort((noteA, noteB) => noteA.isEdited === noteB.isEdited ? 0 : noteA.isEdited ? -1 : 1))
 })
 

@@ -1,13 +1,17 @@
 <script>
-import { activeStore, notesStore, editedStore } from '../Store/Notes.js';
+  import { activeStore, notesStore, editedStore, originalStore } from '../Store/Notes.js';
 import { titleStore, textStore } from '../Store/NoteTaker.js'
 import { onDestroy } from 'svelte'
+  import { loadingStore } from '../Store/LoadingStore.js'
 
 let notes
 
 const unsubscribeNotes = notesStore.subscribe(value => notes = value)
 
-const noteById = id => {
+const noteById = (event, n) => {
+  if(n.isEdited && event.target.classList.contains('save-note')) return
+  if(event.target.classList.contains('delete-note')) return
+  const id = n.id
   if($activeStore.id === id) return
   const find = notes.find(activeNote => activeNote.id === id)
   const oldNote = {...$activeStore}
@@ -20,6 +24,44 @@ const noteById = id => {
     }))
   }
   activeStore.set(find)
+  window.scrollTo(0,0)
+  document.querySelector('.note-textarea').focus()
+}
+
+const deleteNote = id => {
+  loadingStore.set(true)
+  if(id === $activeStore.id) activeStore.set({})
+  editedStore.set($editedStore.filter(note => id !== note.id))
+  fetch(`http://localhost:3001/api/notes/${id}`,{
+    method:'delete'
+  })
+    .then(resp => resp.json())
+    .then(notes => originalStore.set(notes))
+    .then(() => loadingStore.set(false))
+
+}
+
+const saveNote = (note) => {
+  if(!note.isEdited) return
+  editedStore.set($editedStore.filter(n => n.id !== note.id))
+  loadingStore.set(true)
+  if(note.id === $activeStore.id) {
+    note.title = $titleStore
+    note.text = $textStore
+  }
+  fetch(`http://localhost:3001/api/notes/${note.id}`, {
+    method: 'put',
+    body: JSON.stringify(note),
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+    .then(resp => resp.json())
+    .then(json => {
+      originalStore.set(json)
+      if(note.id === $activeStore.id) activeStore.set({})
+      loadingStore.set(false)
+    })
 }
 
 onDestroy(unsubscribeNotes)
@@ -34,10 +76,10 @@ onDestroy(unsubscribeNotes)
         </li>
       {:else}
         {#each notes as note}
-          <li class="list-group-item" class:text-white={note.isEdited} class:bg-warning={note.isEdited} on:click={() => noteById(note.id)}>
+          <li class="list-group-item" class:text-white={note.isEdited} class:bg-warning={note.isEdited} on:click={event => noteById(event, note)}>
             <h5 class="list-item-title">{note.title}</h5>
-            <i class="fas fa-save fade float-right save-note" class:show={note.isEdited}></i>
-            <i class="fas fa-trash-alt float-right text-danger delete-note"></i>
+            <i class="fas fa-save fade float-right save-note" class:show={note.isEdited} on:click|preventDefault={() => saveNote(note)}></i>
+            <i class="fas fa-trash-alt float-right text-danger delete-note" on:click|preventDefault={() => deleteNote(note.id)}></i>
             <span class="list-item-date">Saved On: {note.updated}</span>
           </li>
         {/each}
