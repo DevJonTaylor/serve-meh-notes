@@ -1,4 +1,5 @@
 <script>
+  import { server } from '../package.json'
   import { onMount } from 'svelte'
   import { originalStore } from './lib/Store/Notes.js'
   import { loadingStore } from './lib/Store/LoadingStore.js'
@@ -9,7 +10,7 @@
 
   onMount(() => {
     loadingStore.set(true)
-    fetch('http://localhost:3001/api/notes')
+    fetch(server)
       .then(resp => resp.json())
       .then(notes => originalStore.set(notes))
       .then(() => loadingStore.set(false))
@@ -27,3 +28,7 @@
   </div>
 </main>
 <LoadingModal />
+
+<style>
+
+</style>
