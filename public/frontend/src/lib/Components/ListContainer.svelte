@@ -50,7 +50,7 @@
       note.title = $titleStore
       note.text = $textStore
     }
-    fetch(`http://localhost:3001/api/notes/${note.id}`, {
+    fetch(`${server}${note.id}`, {
       method: 'put',
       body: JSON.stringify(note),
       headers: {
