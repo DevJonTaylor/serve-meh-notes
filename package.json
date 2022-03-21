@@ -5,15 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "author": "Jon Taylor",
   "license": "MIT",
   "dependencies": {
     "esm": "^3.2.25",
     "express": "^4.16.4",
-    "nanoid": "^3.3.1",
-    "winston": "^3.6.0"
+    "nanoid": "^3.3.1"
   },
   "devDependencies": {
     "cors": "^2.8.5",
