@@ -1,12 +1,14 @@
 <script>
+  import { onDestroy } from 'svelte'
   import { loadingStore } from '../Store/LoadingStore.js'
   import { Diamonds } from 'svelte-loading-spinners'
 
-  loadingStore.subscribe(isLoading => {
-    const modal = jQuery('#loading').modal({ backdrop: 'static', keyboard: false })
-    if(isLoading) modal.modal('show')
-    else modal.modal('hide')
+  const unsubscribe = loadingStore.subscribe(isLoading => {
+    if(isLoading) jQuery('#loading').modal({ backdrop: 'static', keyboard: false })
+    else jQuery('#loading').modal('hide')
   })
+
+  onDestroy(unsubscribe)
 </script>
 
 <div class="modal fade" id="loading" tabindex="-1">
