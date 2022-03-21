@@ -85,6 +85,8 @@ const newNote = () => {
 }
 
 const revert = () => {
+  if(disableRevert) return
+
   removeEdited()
   activeStore.set($originalStore.find(n => n.id === note.id))
 }
@@ -92,21 +94,38 @@ const revert = () => {
 const createNote = () => {
   fetch(`http://localhost:3001/api/notes/`, {
     method: 'post',
-    body: JSON.stringify(note)
+    body: JSON.stringify(note),
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  })
+    .then(resp => resp.json())
+    .then(json => {
+      originalStore.set(json)
+      newNote()
+    })
+}
+
+const updateNote = () => {
+  fetch(`http://localhost:3001/api/notes/${note.id}`, {
+    method: 'put',
+    body: JSON.stringify(note),
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
   })
     .then(resp => resp.json())
     .then(json => {
       removeEdited()
       originalStore.set(json)
+      newNote()
+      loadingStore.set(false)
     })
 }
 
-const updateNote = () => {
-
-}
-
 const saveNote = () => {
-  loadingStore.set(true)
+  if(disableSave) return
+
   note.title = title
   note.text = text
   if(!note.id) createNote()

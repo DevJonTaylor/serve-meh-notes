@@ -56,8 +56,7 @@ const db = {
   },
   async newNote({ title, text }) {
     if(!title || !text) return false;
-    const time = new Date().getTime()
-    const id = nanoid(7)
+    const time = new Date().toLocaleString()
     const notes = await db.read()
     notes.push({
       id: nanoid(7),
@@ -68,30 +67,31 @@ const db = {
     })
 
     db.notes = notes
+    await db.sortNotes()
     return await db.write()
   },
   async updateNote(id, { title, text }) {
     const notes = await db.read()
     if(!id) return 0
-    let noteFound = false
-    notes.map((note, i) => {
-      if(note.id === id) {
-        noteFound = true
-        const updateTime = new Date().toLocaleString()
-        if(!title && !text) return
-        if(title && note.title !== title) {
-          db.notes[i].title = title
-          db.notes[i].updated = updateTime
-        }
-        if(text && note.text !== text) {
-          db.notes[i].text = text
-          db.notes[i].updated = updateTime
-        }
-      }
-    })
-    if(!noteFound) return 1
 
-    return db.sortNotes().then(db.write)
+    const note = notes.find(note => note.id === id)
+    if(!note) return 1
+
+    const updateTime = new Date().toLocaleString()
+
+    if(title && note.title !== title) {
+      note.title = title
+      note.updated = updateTime
+    }
+
+    if(text && note.text !== text) {
+      note.text = text
+      note.updated = updateTime
+    }
+    db.notes = notes.map(n => n.id === note.id ? note : n)
+
+    await db.sortNotes()
+    return await db.write()
   },
   async deleteNote(id) {
     const notes = await db.read()
