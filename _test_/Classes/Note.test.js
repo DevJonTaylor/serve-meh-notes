@@ -2,7 +2,7 @@
  * TODO:  test static toNote
  */
 import { jest, describe, test } from '@jest/globals'
-import Note from '../../Classes/Note'
+import Note from '../../Classes/Modals/Note.js'
 
 const nanoIdResponse = 'qwerty'
 jest.useFakeTimers()
