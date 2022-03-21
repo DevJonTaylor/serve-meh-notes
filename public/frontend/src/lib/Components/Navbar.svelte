@@ -1,7 +1,6 @@
 <script>
-import { activeStore } from '../Store/Notes.js'
+import { activeStore, originalStore, editedStore } from '../Store/Notes.js'
 import { titleStore, textStore } from '../Store/NoteTaker.js'
-import Note from '../Classes/Note.js'
 
 const icon = i => `fas fa-${i} text-light fade show`
 let disableRevert = true
@@ -11,33 +10,86 @@ let note = $activeStore
 let title = $titleStore
 let text = $textStore
 
-const runBooleanChecks = (note, title, text) => {
-  const titleEqual = note.title === title
-  const textEqual = note.text === text
-  const noChanges = titleEqual && textEqual
-  const isEmpty = !title && !text
-  const isId = note.id !== ''
-  disableRevert = !isId || noChanges
-  disableSave = isEmpty || noChanges
-  disableNew = !isId && isEmpty
+const runBooleanChecks = () => {
+  if(!note.id) {
+    disableRevert = true
+    disableSave = !title || !text
+    disableNew = !title && !text
+  } else {
+    disableSave = disableRevert = !note.isEdited
+    disableNew = false
+  }
 }
+
+const getOriginalById = () => $originalStore.find(n => n.id === note.id)
+const removeEdited = () => editedStore.set($editedStore.filter(n => n.id !== note.id))
+const addEdited = () => editedStore.set([...$editedStore, note])
+
+const checkForTitle = () => {
+  if(!note.id) return
+  const original = getOriginalById()
+  if(note.isEdited) {
+    if(title === original.title) {
+      removeEdited()
+      note.isEdited = false
+    }
+  } else {
+    if(title !== original.title) {
+      addEdited()
+      note.isEdited = true
+    }
+  }
+}
+
+const checkForText = () => {
+  if(!note.id) return
+  const original = getOriginalById()
+  if(note.isEdited) {
+    if(title === original.title && text === original.text) {
+      removeEdited()
+      note.isEdited = false
+    }
+  } else {
+    if(text !== original.text) {
+      addEdited()
+      note.isEdited = true
+    }
+  }
+}
+
 activeStore.subscribe(v => {
   note = v;
-  runBooleanChecks(note, title, text);
+  runBooleanChecks();
 })
 
 titleStore.subscribe(v => {
   title = v;
-  runBooleanChecks(note, title, text);
+  checkForTitle()
+  runBooleanChecks();
 })
 
 textStore.subscribe(v => {
   text = v;
-  runBooleanChecks(note, title, text);
+  checkForText()
+  runBooleanChecks();
 })
 
-const startOver = () => {
-  activeStore.set(new Note())
+const newNote = () => {
+  if(note.id && note.isEdited) {
+    note.title = title
+    note.text = text
+    editedStore.set($editedStore.map(n => n.id === note.id ? note : n))
+  }
+  activeStore.set({})
+}
+
+const revert = () => {
+  removeEdited()
+  activeStore.set($originalStore.find(n => n.id === note.id))
+}
+
+const saveNote = () => {
+
 }
 
 </script>
@@ -45,8 +97,8 @@ const startOver = () => {
 <nav class="navbar navbar-dark bg-dark">
   <a class="navbar-brand" href="/">Note Taker</a>
   <div class="icons">
-    <i class={icon('redo')} class:btn-disabled={ disableRevert }></i>
-    <i class={icon('save')} class:btn-disabled={ disableSave }></i>
-    <i class={icon('plus')} class:btn-disabled={ disableNew } on:click={ startOver }></i>
+    <i class={icon('redo')} class:btn-disabled={ disableRevert } on:click={ revert }></i>
+    <i class={icon('save')} class:btn-disabled={ disableSave } on:click={ saveNote }></i>
+    <i class={icon('plus')} class:btn-disabled={ disableNew } on:click={ newNote }></i>
   </div>
 </nav>

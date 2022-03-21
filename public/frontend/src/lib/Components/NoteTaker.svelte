@@ -3,11 +3,12 @@
   import { activeStore } from '../Store/Notes.js'
   import { onDestroy } from 'svelte'
 
-  let unsubscribeActive = activeStore.subscribe(value => {
-    titleStore.set(value.title)
-    textStore.set(value.text)
+  let unsubscribeActive = activeStore.subscribe(note => {
+    titleStore.set(note.title)
+    textStore.set(note.text)
   })
 
+  onDestroy(unsubscribeActive)
 </script>
 
 <div class="col-8">

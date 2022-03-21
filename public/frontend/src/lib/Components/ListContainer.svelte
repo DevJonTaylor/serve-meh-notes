@@ -1,21 +1,27 @@
 <script>
-import { activeStore, notesStore } from '../Store/Notes.js';
-import Note from '../Classes/Note.js';
+import { activeStore, notesStore, editedStore } from '../Store/Notes.js';
+import { titleStore, textStore } from '../Store/NoteTaker.js'
 import { onDestroy } from 'svelte'
 
-let note, notes
+let notes
 
-let unsubscribeActive = activeStore.subscribe(value => note = value)
-let unsubscribeNotes = notesStore.subscribe(value => notes = value)
+const unsubscribeNotes = notesStore.subscribe(value => notes = value)
 
 const noteById = id => {
-  if(note.id === id) return
+  if($activeStore.id === id) return
   const find = notes.find(activeNote => activeNote.id === id)
-  const newNote = Note.toNote(find)
-  activeStore.set(newNote)
+  const oldNote = {...$activeStore}
+  if(oldNote.isEdited) {
+    oldNote.title = $titleStore
+    oldNote.text = $textStore
+    editedStore.set($editedStore.map(note => {
+      if(note.id !== oldNote.id) return note
+      return oldNote
+    }))
+  }
+  activeStore.set(find)
 }
 
-onDestroy(unsubscribeActive)
 onDestroy(unsubscribeNotes)
 </script>
 
@@ -27,14 +33,34 @@ onDestroy(unsubscribeNotes)
           <span class="list-item-title">No Notes To List</span>
         </li>
       {:else}
-        {#each notes as n}
-          <li class="list-group-item" on:click={() => noteById(n.id)}>
-            <span class="list-item-title">{n.title}</span>
+        {#each notes as note}
+          <li class="list-group-item" class:text-white={note.isEdited} class:bg-warning={note.isEdited} on:click={() => noteById(note.id)}>
+            <h5 class="list-item-title">{note.title}</h5>
+            <i class="fas fa-save fade float-right save-note" class:show={note.isEdited}></i>
             <i class="fas fa-trash-alt float-right text-danger delete-note"></i>
-            <span class="list-item-date">{new Date(parseInt(n.date)).toLocaleString()}</span>
+            <span class="list-item-date">Saved On: {note.updated}</span>
           </li>
         {/each}
       {/if}
     </ul>
   </div>
 </div>
+
+
+<style>
+  .list-item-date {
+      color: #bdbdbd;
+  }
+
+  .save-note {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+  }
+
+  .delete-note {
+      position: absolute;
+      top: 55px;
+      right: 15px;
+  }
+</style>
