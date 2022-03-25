@@ -1,5 +1,5 @@
 # Note Taker
-[![MIT License](https://img.shields.io/badge/license-MIT-green?style=plastic)](https://github.com/DevJonTaylor/sweaty-shell-team/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-green?style=plastic)](./LICENSE)
 [![Node v16.14 ](https://img.shields.io/badge/Node%20v16.14-339933?labelColor=ffffff&style=plastic&logo=node.js&logoColor=339933)](https://nodejs.org/)
 [![Bootstrap v4.6.1 ](https://img.shields.io/badge/Bootstrap%20v4.6.1-7952B3?labelColor=ffffff&style=plastic&logo=bootstrap&logoColor=7952B3)](https://getbootstrap.com/)
 [![Lodash v4.17.21](https://img.shields.io/badge/Lodash%20v4.17.21-3492ff?labelColor=ffffff&style=plastic&logo=lodash)](https://lodash.com/)
