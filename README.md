@@ -21,7 +21,6 @@
   * [Take A New Note](#take-a-new-note)
   * [Update Notes](#update-notes)
   * [Update State Stays](#update-state-stays)
-  * [Obvious UI](#obvious-ui)
   * [Delete Notes](#delete-notes)
 * [Lessons](#lessons)
   * [First Svelte Project](#first-svelte-project)
@@ -176,4 +175,4 @@ Vite was so fast and small compared to Webpack and their Hot Reloading.  Extreme
 
 ## License
 
-[![MIT License](https://img.shields.io/badge/license-MIT-green?style=plastic)](https://github.com/DevJonTaylor/sweaty-shell-team/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/license-MIT-green?style=plastic)](./LICENSE)
